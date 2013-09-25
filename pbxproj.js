@@ -67,7 +67,7 @@
             section.buildFiles = {};
             for (var i = 1; i < section.lines.length - 1; i++) {
                 var line = section.lines[i];
-                var m = line.match(/\t\t([0-9A-F]{24}) \/\* (.*) \*\/ = \{((\w*) = ((\);|[^;])*); )?((\w*) = ((\);|[^;])*); )?((\w*) = ((\);|[^;])*); )?((\w*) = ((\);|[^;])*); )?((\w*) = ((\);|[^;])*); )?\};/);
+                var m = line.match(/\t\t([0-9A-F]{24}) \/\* (.*) \*\/ = \{((isa) = ((PBXBuildFile)); )?((fileRef) = ((\);|";|[^;])*); )?((settings) = (\{(.)*\}); )?\};$/);
                 var fr = {
                     originalContent: line,
                     id: m[1],
@@ -177,6 +177,7 @@
                 for (var n = 0; n < parentGroup.children.length; n++) {
                     var frid = parentGroup.children[n];
                     fr = pf.sections.PBXFileReference.fileReferences[frid] || pf.sections.PBXReferenceProxy.referenceProxies[frid] || pf.sections.PBXGroup.groups[frid] || pf.sections.PBXVariantGroup.groups[frid];
+                    if (!fr) continue;
                     if (fr.isDeleted) continue;
                     if (fr.name == name || fr.label == name) return fr;
                 }
@@ -527,7 +528,7 @@
             parsePBXReferenceProxySection(pf.sections.PBXReferenceProxy);
             parsePBXBuildFileSection(pf.sections.PBXBuildFile);
             parsePBXGroupSection(pf.sections.PBXGroup);
-            parsePBXVariantGroupSection(pf.sections.PBXVariantGroup);
+            if (pf.sections.PBXVariantGroup) parsePBXVariantGroupSection(pf.sections.PBXVariantGroup);
             parsePBXResourcesBuildPhaseSection(pf.sections.PBXResourcesBuildPhase);
             parsePBXResourcesBuildPhaseSection(pf.sections.PBXSourcesBuildPhase);
             parsePBXNativeTargetSection(pf.sections.PBXNativeTarget);
@@ -556,7 +557,7 @@
             while (i < pathComponents.length) {
                 item = pf.sections.PBXGroup.getChildByName(item, pathComponents[i++]);
             }
-
+if (!item) return;
 
             item.isDeleted = true;
             if (item.children) {
@@ -648,6 +649,10 @@
         pf.addFileToTarget = function(targetName, phaseName, path) {
             // get target
             var target = pf.sections.PBXNativeTarget.getByName(targetName);
+            if (!target) {
+                console.log("Could not find target "+targetName);
+                return;
+            }
             // find appropriate build phase
             var phase = pf.sections.PBXNativeTarget.getBuildPhase(target, phaseName);
 
