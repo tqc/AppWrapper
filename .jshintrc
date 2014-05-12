@@ -1,8 +1,9 @@
 {
   "browser": false,
   "node": true,
+  "phantom":true,
   "esnext": true,
-  "globals": {"phantom":true, "console": true},
+  "globals": {"console": true},
   "globalstrict": true,
   "quotmark": false,
   "smarttabs": true,
