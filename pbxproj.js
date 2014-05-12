@@ -1,9 +1,11 @@
 (function() {
 
+    "use strict";
+
     var fs = require('fs');
 
 
-    var pbxprojFile = function() {
+    var PbxprojFile = function() {
         var pf = this;
 
 
@@ -176,7 +178,7 @@
             section.getChildByName = function(parentGroup, name) {
                 for (var n = 0; n < parentGroup.children.length; n++) {
                     var frid = parentGroup.children[n];
-                    fr = pf.sections.PBXFileReference.fileReferences[frid] || pf.sections.PBXReferenceProxy.referenceProxies[frid] || pf.sections.PBXGroup.groups[frid] || pf.sections.PBXVariantGroup.groups[frid];
+                    var fr = pf.sections.PBXFileReference.fileReferences[frid] || pf.sections.PBXReferenceProxy.referenceProxies[frid] || pf.sections.PBXGroup.groups[frid] || pf.sections.PBXVariantGroup.groups[frid];
                     if (!fr) continue;
                     if (fr.isDeleted) continue;
                     if (fr.name == name || fr.label == name) return fr;
@@ -187,7 +189,7 @@
             section.deleteChildItems = function(g) {
                 for (var n = 0; n < g.children.length; n++) {
                     var frid = g.children[n];
-                    fr = pf.sections.PBXFileReference.fileReferences[frid] || pf.sections.PBXReferenceProxy.referenceProxies[frid] || pf.sections.PBXGroup.groups[frid] || pf.sections.PBXVariantGroup.groups[frid];
+                    var fr = pf.sections.PBXFileReference.fileReferences[frid] || pf.sections.PBXReferenceProxy.referenceProxies[frid] || pf.sections.PBXGroup.groups[frid] || pf.sections.PBXVariantGroup.groups[frid];
                     if (!fr) continue;
                     fr.isDeleted = true;
                     if (fr.children) section.deleteChildItems(fr);
@@ -209,7 +211,7 @@
                     outputLines.push("\t\t\tchildren = (");
                     for (var n = 0; n < g.children.length; n++) {
                         var frid = g.children[n];
-                        fr = pf.sections.PBXFileReference.fileReferences[frid] || pf.sections.PBXReferenceProxy.referenceProxies[frid] || pf.sections.PBXGroup.groups[frid] || pf.sections.PBXVariantGroup.groups[frid];
+                        var fr = pf.sections.PBXFileReference.fileReferences[frid] || pf.sections.PBXReferenceProxy.referenceProxies[frid] || pf.sections.PBXGroup.groups[frid] || pf.sections.PBXVariantGroup.groups[frid];
                         if (fr.isDeleted) continue;
                         outputLines.push("\t\t\t\t" + fr.id + " /* " + fr.label + " */,");
                     }
@@ -273,7 +275,7 @@
             section.getChildByName = function(parentGroup, name) {
                 for (var n = 0; n < parentGroup.children.length; n++) {
                     var frid = parentGroup.children[n];
-                    fr = pf.sections.PBXFileReference.fileReferences[frid] || pf.sections.PBXReferenceProxy.referenceProxies[frid] || pf.sections.PBXGroup.groups[frid] || pf.sections.PBXVariantGroup.groups[frid];
+                    var fr = pf.sections.PBXFileReference.fileReferences[frid] || pf.sections.PBXReferenceProxy.referenceProxies[frid] || pf.sections.PBXGroup.groups[frid] || pf.sections.PBXVariantGroup.groups[frid];
                     if (fr.isDeleted) continue;
                     if (fr.name == name || fr.label == name) return fr;
                 }
@@ -296,7 +298,7 @@
                     outputLines.push("\t\t\tchildren = (");
                     for (var n = 0; n < g.children.length; n++) {
                         var frid = g.children[n];
-                        fr = pf.sections.PBXFileReference.fileReferences[frid] || pf.sections.PBXReferenceProxy.referenceProxies[frid] || pf.sections.PBXGroup.groups[frid] || pf.sections.PBXVariantGroup.groups[frid];
+                        var fr = pf.sections.PBXFileReference.fileReferences[frid] || pf.sections.PBXReferenceProxy.referenceProxies[frid] || pf.sections.PBXGroup.groups[frid] || pf.sections.PBXVariantGroup.groups[frid];
                         if (fr.isDeleted) continue;
                         outputLines.push("\t\t\t\t" + fr.id + " /* " + fr.label + " */,");
                     }
@@ -390,8 +392,8 @@
 
                 line = section.lines[i++];
                 while (line.indexOf("};") < 0) {
-                    var m3 = line.match(/\t*(\w*) = (.*);$/);
-                    g[m3[1]] = m3[2];
+                    var m4 = line.match(/\t*(\w*) = (.*);$/);
+                    g[m4[1]] = m4[2];
                     line = section.lines[i++];
                 }
             }
@@ -411,7 +413,7 @@
                     outputLines.push("\t\t\tfiles = (");
                     for (var n = 0; n < g.files.length; n++) {
                         var frid = g.files[n];
-                        fr = pf.sections.PBXBuildFile.buildFiles[frid]
+                        var fr = pf.sections.PBXBuildFile.buildFiles[frid];
                         if (fr.isDeleted || (fr.fileRef && fr.fileRef.isDeleted)) continue;
                         outputLines.push("\t\t\t\t" + fr.id + " /* " + fr.label + " */,");
                     }
@@ -455,8 +457,8 @@
 
                 line = section.lines[i++];
                 while (line.indexOf("};") < 0) {
-//                    var m3 = line.match(/\t*(\w*) = (.*);$/);
-//                    g[m3[1]] = m3[2];
+                    //                    var m3 = line.match(/\t*(\w*) = (.*);$/);
+                    //                    g[m3[1]] = m3[2];
                     line = section.lines[i++];
                 }
             }
@@ -474,7 +476,7 @@
                 for (var k = 0; k < target.buildPhases.length; k++) {
                     var phaseId = target.buildPhases[k];
                     var phase = pf.sections.PBXResourcesBuildPhase.buildPhases[phaseId] ||
-                    pf.sections.PBXSourcesBuildPhase.buildPhases[phaseId];
+                        pf.sections.PBXSourcesBuildPhase.buildPhases[phaseId];
                     if (!phase) continue;
                     if (phase.name == name || phase.label == name) return phase;
                 }
@@ -557,20 +559,20 @@
             while (i < pathComponents.length) {
                 item = pf.sections.PBXGroup.getChildByName(item, pathComponents[i++]);
             }
-if (!item) return;
+            if (!item) return;
 
             item.isDeleted = true;
             if (item.children) {
                 pf.sections.PBXGroup.deleteChildItems(item);
             }
-        }
+        };
 
         var lastId = new Date().getTime();
 
         pf.getNewId = function() {
             lastId++;
             var pad = "000000000000000000000000";
-            hex = lastId.toString(16).toUpperCase();
+            var hex = lastId.toString(16).toUpperCase();
             hex = hex + pad.substring(0, pad.length - hex.length);
             return hex;
         };
@@ -619,7 +621,7 @@ if (!item) return;
             }
 
             if (item) return item;
-           console.log("creating file " + path);
+            console.log("creating file " + path);
             var newfile = {
                 id: pf.getNewId(),
                 label: pathComponents[pathComponents.length - 1],
@@ -644,13 +646,13 @@ if (!item) return;
         // add file reference and add to a group
         pf.addFile = function(path, group) {
 
-        }
+        };
 
         pf.addFileToTarget = function(targetName, phaseName, path) {
             // get target
             var target = pf.sections.PBXNativeTarget.getByName(targetName);
             if (!target) {
-                console.log("Could not find target "+targetName);
+                console.log("Could not find target " + targetName);
                 return;
             }
             // find appropriate build phase
@@ -685,7 +687,7 @@ if (!item) return;
             pf.sections.PBXBuildFile.buildFileArray.push(newfile);
             phase.files.push(newfile.id);
 
-        }
+        };
 
 
         pf.save = function(path) {
@@ -711,7 +713,7 @@ if (!item) return;
 
     exports.open = function(path) {
 
-        var f = new pbxprojFile();
+        var f = new PbxprojFile();
         f.open(path);
         return f;
 

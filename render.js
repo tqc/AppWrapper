@@ -1,4 +1,5 @@
-var fs = require("fs");
+"use strict";
+
 var system = require('system');
 
 var page = require("webpage").create();
@@ -20,7 +21,7 @@ function generate(url, w, h, fn, callback) {
     });
 
 
-};
+}
 
 generate(iconSource, 1024, 1024, "icon-1024.png", function() {
     generate(iconSource, 144, 144, "icon-72@2x.png", function() {

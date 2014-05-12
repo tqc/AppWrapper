@@ -1,5 +1,5 @@
 (function() {
-
+    "use strict";
     var fs = require("fs-extra");
     var path = require("path");
     var childproc = require('child_process');
@@ -18,7 +18,7 @@
             appConfig = require(path.resolve(dir, "appwrapper.json"));
             exports.isConfigured = true;
         }
-    }
+    };
 
     exports.init = function() {
         appConfig = {
@@ -37,17 +37,17 @@
             }
         };
         fs.writeFileSync(path.resolve(appDir, "appwrapper.json"), JSON.stringify(appConfig, null, 4));
-    }
+    };
 
 
     function exec(command, args, options, callback) {
-        console.log(process.platform)
-
+        console.log(process.platform);
+        var proc;
         if (process.platform == "win32") {
             // Workaround for https://github.com/joyent/node/issues/2318
             var fullCommand = command + " " + args.join(" ");
-            console.log("running " + fullCommand)
-            var proc = childproc.exec(fullCommand, options, function(error, stdout, stderr) {
+            console.log("running " + fullCommand);
+            proc = childproc.exec(fullCommand, options, function(error, stdout, stderr) {
                 if (stdout) console.log(stdout);
                 if (stderr) console.error(stderr);
                 callback((error && error.code) || 0, stdout + stderr);
@@ -55,7 +55,7 @@
 
         } else {
             var result = "";
-            var proc = childproc.spawn(command, args, options);
+            proc = childproc.spawn(command, args, options);
             proc.stdout.on('data', function(data) {
                 console.log("" + data);
                 result += data;
@@ -106,7 +106,7 @@
             if (!appConfig.platforms || !appConfig.platforms[i]) return callback();
             addPlatformIfNeeded(appConfig.platforms[i], function() {
                 loopfn(i + 1);
-            })
+            });
         }
         loopfn(0);
     }
@@ -121,13 +121,13 @@
         if (!fs.existsSync(hookFolder)) {
             fs.mkdirSync(hookFolder);
         }
-        var hookPath = path.resolve(hookFolder, "webcopy.js")
+        var hookPath = path.resolve(hookFolder, "webcopy.js");
         var fromPath = path.resolve(appDir, appConfig.webPath);
         fromPath = path.relative(path.resolve(appDir, appConfig.cordovaFolder), fromPath);
         fromPath = fromPath.replace(/\\/g, "/");
         fs.writeFileSync(hookPath, hookTemplate.replace("__sourcepath__", fromPath));
         if (process.platform != "win32") {
-            fs.chmodSync(hookPath, 0777);
+            fs.chmodSync(hookPath, "777");
         }
         callback();
     }
@@ -166,14 +166,14 @@
                     //                    cwd: "lib/cordova-ios/bin"
                 }, function(code, data) {
                     console.log(data);
-                    if (code == 0) {
+                    if (code === 0) {
                         console.log("Project created");
                         console.log("creating ios project");
                         exec("cordova", ["platform", "add", "ios"], {
                             //                    cwd: "lib/cordova-ios/bin"
                         }, function(code, data) {
                             console.log(data);
-                            if (code == 0) {
+                            if (code === 0) {
                                 console.log("Project created");
                                 callback();
 
@@ -207,7 +207,7 @@
 
             callback();
 
-        };
+        }
 
 
         function updatePlugins(callback) {
@@ -228,11 +228,11 @@
 
                 function(err) {
                     callback();
-                })
+                });
 
 
 
-        };
+        }
 
         function removePhonegapDefaultFiles(callback) {
 
